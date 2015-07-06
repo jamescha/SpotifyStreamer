@@ -38,12 +38,12 @@ public class SpotifyContract {
         //Name of artist
         public static final String COLUMN_ARTIST_NAME = "artist_name";
 
+        public static final String COLUMN_ARTIST_ID = "artist_id";
+
+        public static final String COLUMN_ARTIST_IMAGE = "artist_image";
+
         public static Uri buildArtistUri(long id) {
             return ContentUris.withAppendedId(CONTENT_URI, id);
-        }
-
-        public static Uri buildArtistName(String artistName) {
-            return CONTENT_URI.buildUpon().appendPath(artistName).build();
         }
     }
 
@@ -62,18 +62,19 @@ public class SpotifyContract {
 
         public static final String TABLE_NAME = "songs";
 
-        public static final String COLUMN_ARTIST_KEY = "artist_id";
-
         public static final String COLUMN_SONG_NAME = "song_name";
+
+        public static final String COLUMN_ALBUM_ART_SMALL = "album_art_small";
+
+        public static final String COLUMN_ALBUM_ART_LARGE = "album_art_large";
+
+        public static final String COLUMN_ALBUM_NAME = "album_name";
+
+        public static final String COLUMN_PREVIEW_URL = "preview_uri";
 
         public static Uri buildSongsUri(long id) {
             return ContentUris.withAppendedId(CONTENT_URI, id);
         }
-
-        public static Uri buildSongName(String songName) {
-            return CONTENT_URI.buildUpon().appendPath(songName).build();
-        }
-
     }
 
 

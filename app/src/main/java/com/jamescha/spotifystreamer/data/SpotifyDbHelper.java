@@ -23,19 +23,17 @@ public class SpotifyDbHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         final String SQL_CREATE_ARTIST_TABLE = "CREATE TABLE " + ArtistEntry.TABLE_NAME + " (" +
                 ArtistEntry._ID + " INTEGER PRIMARY KEY," +
-                ArtistEntry.COLUMN_ARTIST_NAME + " TEXT UNIQUE NOT NULL " +
-                " );";
+                ArtistEntry.COLUMN_ARTIST_NAME + " TEXT NOT NULL, " +
+                ArtistEntry.COLUMN_ARTIST_ID + " TEXT NOT NULL, " +
+                ArtistEntry.COLUMN_ARTIST_IMAGE + " TEXT NOT NULL " + ");";
 
         final String SQL_CREATE_SONGS_TABLE = "CREATE TABLE " + SongsEntry.TABLE_NAME + " (" +
                 SongsEntry._ID + " INTEGER PRIMARY KEY, " +
-                SongsEntry.COLUMN_ARTIST_KEY + " INTEGER NOT NULL, " +
-                SongsEntry.COLUMN_SONG_NAME + " TEXT UNIQUE NOT NULL, " +
-
-                " FOREIGN KEY (" + SongsEntry.COLUMN_ARTIST_KEY + ") REFERENCES " +
-                ArtistEntry.TABLE_NAME + " (" + ArtistEntry._ID + "), " +
-
-                " UNIQUE (" + SongsEntry.COLUMN_SONG_NAME + ", " +
-                SongsEntry.COLUMN_ARTIST_KEY + ") ON CONFLICT REPLACE);";
+                SongsEntry.COLUMN_SONG_NAME + " TEXT NOT NULL, " +
+                SongsEntry.COLUMN_ALBUM_NAME + " TEXT NOT NULL, " +
+                SongsEntry.COLUMN_ALBUM_ART_SMALL + " TEXT NOT NULL, " +
+                SongsEntry.COLUMN_ALBUM_ART_LARGE + " TEXT NOT NULL, " +
+                SongsEntry.COLUMN_PREVIEW_URL + " TEXT NOT NULL " + ");";
 
         db.execSQL(SQL_CREATE_ARTIST_TABLE);
         db.execSQL(SQL_CREATE_SONGS_TABLE);

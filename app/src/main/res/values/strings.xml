@@ -1,4 +1,9 @@
 <resources>
     <string name="app_name">Spotify Streamer</string>
+    <string name="sync_account_type">spotifiystreamer.jamescha.com</string>
+    <string name="content_authority">com.jamescha.spotifystreamer</string>
     <string name="action_settings">Settings</string>
+    <string name="edit_text_hint">Artist Name</string>
+    <string name="title_activity_songs_actvity">SongsActvity</string>
+    <string name="hello_world">Hello world!</string>
 </resources>
