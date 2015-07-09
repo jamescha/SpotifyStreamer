@@ -18,7 +18,6 @@ import com.jamescha.spotifystreamer.R;
 import com.jamescha.spotifystreamer.data.SpotifyContract;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Vector;
 
@@ -115,7 +114,6 @@ public class ArtistSyncAdapter extends AbstractThreadedSyncAdapter {
 
                     @Override
                     public void success(Tracks tracks, Response response) {
-                        Log.d(LOG_TAG, "Artist: " + tracks.tracks.get(0).artists.get(0).name);
                         Integer height;
                         final Vector<ContentValues> songsVector = new Vector<>();
                         for (Track track : tracks.tracks) {
@@ -128,9 +126,8 @@ public class ArtistSyncAdapter extends AbstractThreadedSyncAdapter {
                             Pair<String, Integer> largeImageUrl = new Pair<>(IMAGE_NOT_FOUND, 0);
                             Pair<String, Integer> smallImageUrl = new Pair<>(IMAGE_NOT_FOUND, 640);
                             if (track.album.images.isEmpty() == false) {
-                                Iterator<Image> trackImageIterator = track.album.images.iterator();
-                                while (trackImageIterator.hasNext()) {
-                                    Image image = trackImageIterator.next();
+
+                                for (Image image : track.album.images) {
                                     height = image.height;
 
                                     //Largest image possible or 640

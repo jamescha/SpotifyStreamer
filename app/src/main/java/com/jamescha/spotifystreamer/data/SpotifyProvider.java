@@ -18,9 +18,7 @@ public class SpotifyProvider extends ContentProvider {
     private SpotifyDbHelper mSpotifyDbHelper;
 
     static final int ARTIST = 100;
-    static final int ARTIST_WITH_NAME = 101;
     static final int SONGS = 200;
-    static final int SONGS_WITH_ARTIST_ID = 201;
 
     private static final SQLiteQueryBuilder sArtistbyNameQueryBuilder;
     private static final SQLiteQueryBuilder sSongsbyAristQueryBuilder;

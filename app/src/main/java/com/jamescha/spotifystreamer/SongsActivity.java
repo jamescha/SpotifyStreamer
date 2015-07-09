@@ -2,9 +2,10 @@ package com.jamescha.spotifystreamer;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
-import android.widget.Toast;
+import android.view.MenuItem;
 
 import com.jamescha.spotifystreamer.sync.ArtistSyncAdapter;
 
@@ -30,10 +31,22 @@ public class SongsActivity extends ActionBarActivity implements SongsFragment.Ca
         bundle.putInt(ArtistSyncAdapter.SEARCH_TYPE, ArtistSyncAdapter.SONG_SEARCH);
 
         ArtistSyncAdapter.syncImmediately(this, bundle, null);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home: {
+                NavUtils.navigateUpFromSameTask(this);
+                return true;
+            }
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
     public void onItemSelected() {
-        Toast.makeText(this, "Test", Toast.LENGTH_SHORT).show();
+
     }
 }

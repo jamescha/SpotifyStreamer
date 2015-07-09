@@ -37,16 +37,10 @@ public class ArtistFragment extends Fragment implements LoaderManager.LoaderCall
     public static final int COL_ARTIST_IMAGE = 3;
     public final static int TASK_COMPLETE = 0;
 
-    private ArtistAdapter mArtistAdapter;
-    private ListView artistListView;
-    private Toast mToast;
-    private Handler mHandler;
-    private int mPosition = ListView.INVALID_POSITION;
-    private boolean mUseTwoFragmentView;
-
     private static final String ARTIST_SEARCH_KEY = "artist_search";
     private static final String SELECTED_KEY = "selected_position";
     private static final String ARTIST_NAME_KEY = "artist_name";
+    private static final String SELECTED_ARTIST_NAME_KEY = "selected_artist_name";
     private static final int ARTIST_LOADER = 0;
     private static final String[] ARTIST_COLUMNS = {
             SpotifyContract.ArtistEntry.TABLE_NAME + "." + SpotifyContract.ArtistEntry._ID,
@@ -54,6 +48,16 @@ public class ArtistFragment extends Fragment implements LoaderManager.LoaderCall
             SpotifyContract.ArtistEntry.COLUMN_ARTIST_ID,
             SpotifyContract.ArtistEntry.COLUMN_ARTIST_IMAGE
     };
+
+
+    private ArtistAdapter mArtistAdapter;
+    private ListView artistListView;
+    private Toast mToast;
+    private Handler mHandler;
+    private int mPosition = ListView.INVALID_POSITION;
+    private String mArtistName = "";
+    private boolean mUseTwoFragmentView;
+    private EditText artistNameSearch;
 
     public interface Callback {
         void onItemSelected(String id);
@@ -65,6 +69,7 @@ public class ArtistFragment extends Fragment implements LoaderManager.LoaderCall
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
     }
 
     @Override
@@ -85,19 +90,25 @@ public class ArtistFragment extends Fragment implements LoaderManager.LoaderCall
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Cursor cursor = (Cursor) parent.getItemAtPosition(position);
+
                 if (cursor != null) {
                     String artistId = cursor.getString(COL_ARTIST_ID);
                     ((Callback) getActivity()).onItemSelected(artistId);
                 }
                 mPosition = position;
+                mArtistName = cursor.getString(COL_ARTIST_NAME);
+
             }
         });
 
         if (savedInstanceState != null && savedInstanceState.containsKey(SELECTED_KEY)) {
             mPosition = savedInstanceState.getInt(SELECTED_KEY);
         }
+        if (savedInstanceState != null && savedInstanceState.containsKey(SELECTED_ARTIST_NAME_KEY)) {
+            mArtistName = savedInstanceState.getString(SELECTED_ARTIST_NAME_KEY);
+        }
 
-        final EditText artistNameSearch = (EditText) rootView.findViewById(R.id.search);
+        artistNameSearch = (EditText) rootView.findViewById(R.id.search);
 
         artistNameSearch.addTextChangedListener(new TextWatcher() {
             @Override
@@ -156,7 +167,6 @@ public class ArtistFragment extends Fragment implements LoaderManager.LoaderCall
                     bundle.putBoolean(ARTIST_SEARCH_KEY, true);
                     ArtistSyncAdapter.syncImmediately(getActivity(), bundle, mHandler);
                     handled = true;
-
                 }
 
                 return handled;
@@ -177,6 +187,7 @@ public class ArtistFragment extends Fragment implements LoaderManager.LoaderCall
     public void onSaveInstanceState(Bundle outState) {
         if (mPosition != ListView.INVALID_POSITION) {
             outState.putInt(SELECTED_KEY, mPosition);
+            outState.putString(SELECTED_ARTIST_NAME_KEY, mArtistName);
         }
 
         super.onSaveInstanceState(outState);
@@ -184,8 +195,7 @@ public class ArtistFragment extends Fragment implements LoaderManager.LoaderCall
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-
-        //String sortOrder = SpotifyContract.ArtistEntry.COLUMN_ARTIST_NAME + " ASC";
+        
         String sortOrder = null;
         Uri artistUri = SpotifyContract.ArtistEntry.CONTENT_URI;
 
@@ -206,6 +216,9 @@ public class ArtistFragment extends Fragment implements LoaderManager.LoaderCall
         mArtistAdapter.swapCursor(data);
         if (mPosition != ListView.INVALID_POSITION) {
             artistListView.smoothScrollToPosition(mPosition);
+        }
+        if (mArtistName != "") {
+            artistNameSearch.setText(mArtistName);
         }
     }
 
