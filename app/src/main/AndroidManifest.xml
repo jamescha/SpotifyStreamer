@@ -11,7 +11,7 @@
     <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS" />
 
     <!-- Need to have internet to search and play music. -->
-    <uses-permission android:name="ANDROID.PERMISSION.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
 
     <application
         android:allowBackup="true"

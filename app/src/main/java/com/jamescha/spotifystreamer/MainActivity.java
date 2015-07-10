@@ -3,6 +3,7 @@ package com.jamescha.spotifystreamer;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.view.Menu;
 
 import com.jamescha.spotifystreamer.sync.ArtistSyncAdapter;
 
@@ -17,6 +18,11 @@ public class MainActivity extends ActionBarActivity implements ArtistFragment.Ca
         setContentView(R.layout.activity_main);
 
         ArtistSyncAdapter.initializeSyncAdapter(this);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
