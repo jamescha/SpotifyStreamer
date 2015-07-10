@@ -2,13 +2,16 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.jamescha.spotifystreamer" >
 
-    <!-- This permission is necessary in order for Sunshine to perform network access. -->
+    <!-- This permission is necessary in order to perform network access. -->
     <uses-permission android:name="android.permission.INTERNET" />
 
     <!-- Permissions required by the sync adapter -->
     <uses-permission android:name="android.permission.READ_SYNC_SETTINGS" />
     <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS" />
     <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS" />
+
+    <!-- Need to have internet to search and play music. -->
+    <uses-permission android:name="ANDROID.PERMISSION.ACCESS_NETWORK_STATE"/>
 
     <application
         android:allowBackup="true"

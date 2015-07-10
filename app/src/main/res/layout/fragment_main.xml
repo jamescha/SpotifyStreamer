@@ -9,13 +9,18 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <EditText
+ <!--       <EditText
             android:id="@+id/search"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:inputType="textNoSuggestions"
             android:imeOptions="actionSearch"
-            android:hint="@string/edit_text_hint" />
+            android:hint="@string/edit_text_hint" />-->
+
+        <SearchView
+            android:id="@+id/search"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"></SearchView>
 
     </FrameLayout>
 

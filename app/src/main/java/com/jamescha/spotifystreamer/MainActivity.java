@@ -19,8 +19,6 @@ public class MainActivity extends ActionBarActivity implements ArtistFragment.Ca
         ArtistSyncAdapter.initializeSyncAdapter(this);
     }
 
-
-
     @Override
     public void onItemSelected(String artistId) {
         Intent intent = new Intent(this, SongsActivity.class);

@@ -10,18 +10,13 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
-import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.TextView;
+import android.widget.SearchView;
 import android.widget.Toast;
 
 import com.jamescha.spotifystreamer.data.SpotifyContract;
@@ -57,19 +52,16 @@ public class ArtistFragment extends Fragment implements LoaderManager.LoaderCall
     private int mPosition = ListView.INVALID_POSITION;
     private String mArtistName = "";
     private boolean mUseTwoFragmentView;
-    private EditText artistNameSearch;
+    private SearchView artistNameSearche;
 
     public interface Callback {
         void onItemSelected(String id);
     }
 
-    public ArtistFragment() {
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        setHasOptionsMenu(true);
     }
 
     @Override
@@ -108,24 +100,24 @@ public class ArtistFragment extends Fragment implements LoaderManager.LoaderCall
             mArtistName = savedInstanceState.getString(SELECTED_ARTIST_NAME_KEY);
         }
 
-        artistNameSearch = (EditText) rootView.findViewById(R.id.search);
+        artistNameSearche = (SearchView) rootView.findViewById(R.id.search);
 
-        artistNameSearch.addTextChangedListener(new TextWatcher() {
+        artistNameSearche.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(final Editable s) {
-                Log.d(LOG_TAG, "EDIT FIELD : " + s.toString());
+            public boolean onQueryTextSubmit(final String query) {
+                Log.d(LOG_TAG, "EDIT FIELD : " + query);
                 Bundle bundle = new Bundle();
-                bundle.putString(ARTIST_NAME_KEY, s.toString());
+                bundle.putString(ARTIST_NAME_KEY, query);
+                bundle.putBoolean(ARTIST_SEARCH_KEY, true);
+
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(final String newText) {
+                Log.d(LOG_TAG, "EDIT FIELD : " + newText);
+                Bundle bundle = new Bundle();
+                bundle.putString(ARTIST_NAME_KEY, newText);
                 bundle.putBoolean(ARTIST_SEARCH_KEY, false);
                 bundle.putInt(ArtistSyncAdapter.SEARCH_TYPE, ArtistSyncAdapter.ARTIST_SEARCH);
                 ArtistSyncAdapter.syncImmediately(getActivity(), bundle, mHandler);
@@ -140,7 +132,7 @@ public class ArtistFragment extends Fragment implements LoaderManager.LoaderCall
                                 }
                                 mToast = Toast.makeText(getActivity(),
                                         "Artist with Name " +
-                                                s.toString() +
+                                                newText +
                                                 " not found.",
                                         Toast.LENGTH_SHORT);
                                 mToast.show();
@@ -151,27 +143,74 @@ public class ArtistFragment extends Fragment implements LoaderManager.LoaderCall
                         }
                     }
                 };
-
+                return true;
             }
         });
 
-        artistNameSearch.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                boolean handled = false;
-
-                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                    Log.d(LOG_TAG, "EDIT FIELD : " + artistNameSearch.getText().toString());
-                    Bundle bundle = new Bundle();
-                    bundle.putString(ARTIST_NAME_KEY, artistNameSearch.getText().toString());
-                    bundle.putBoolean(ARTIST_SEARCH_KEY, true);
-                    ArtistSyncAdapter.syncImmediately(getActivity(), bundle, mHandler);
-                    handled = true;
-                }
-
-                return handled;
-            }
-        });
+//        artistNameSearch = (EditText) rootView.findViewById(R.id.search);
+//
+//        artistNameSearch.addTextChangedListener(new TextWatcher() {
+//            @Override
+//            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+//
+//            }
+//
+//            @Override
+//            public void onTextChanged(CharSequence s, int start, int before, int count) {
+//
+//            }
+//
+//            @Override
+//            public void afterTextChanged(final Editable s) {
+//                Log.d(LOG_TAG, "EDIT FIELD : " + s.toString());
+//                Bundle bundle = new Bundle();
+//                bundle.putString(ARTIST_NAME_KEY, s.toString());
+//                bundle.putBoolean(ARTIST_SEARCH_KEY, false);
+//                bundle.putInt(ArtistSyncAdapter.SEARCH_TYPE, ArtistSyncAdapter.ARTIST_SEARCH);
+//                ArtistSyncAdapter.syncImmediately(getActivity(), bundle, mHandler);
+//
+//                mHandler = new Handler(Looper.getMainLooper()) {
+//                    @Override
+//                    public void handleMessage(Message msg) {
+//                        switch (msg.what) {
+//                            case TASK_COMPLETE: {
+//                                if (mToast != null) {
+//                                    mToast.cancel();
+//                                }
+//                                mToast = Toast.makeText(getActivity(),
+//                                        "Artist with Name " +
+//                                                s.toString() +
+//                                                " not found.",
+//                                        Toast.LENGTH_SHORT);
+//                                mToast.show();
+//                            }
+//                            default: {
+//                                super.handleMessage(msg);
+//                            }
+//                        }
+//                    }
+//                };
+//
+//            }
+//        });
+//
+//        artistNameSearch.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+//            @Override
+//            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+//                boolean handled = false;
+//
+//                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+//                    Log.d(LOG_TAG, "EDIT FIELD : " + artistNameSearch.getText().toString());
+//                    Bundle bundle = new Bundle();
+//                    bundle.putString(ARTIST_NAME_KEY, artistNameSearch.getText().toString());
+//                    bundle.putBoolean(ARTIST_SEARCH_KEY, true);
+//                    ArtistSyncAdapter.syncImmediately(getActivity(), bundle, mHandler);
+//                    handled = true;
+//                }
+//
+//                return handled;
+//            }
+//        });
 
         Log.d(LOG_TAG, "View Created");
         return rootView;
@@ -195,7 +234,7 @@ public class ArtistFragment extends Fragment implements LoaderManager.LoaderCall
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        
+
         String sortOrder = null;
         Uri artistUri = SpotifyContract.ArtistEntry.CONTENT_URI;
 
@@ -216,9 +255,6 @@ public class ArtistFragment extends Fragment implements LoaderManager.LoaderCall
         mArtistAdapter.swapCursor(data);
         if (mPosition != ListView.INVALID_POSITION) {
             artistListView.smoothScrollToPosition(mPosition);
-        }
-        if (mArtistName != "") {
-            artistNameSearch.setText(mArtistName);
         }
     }
 

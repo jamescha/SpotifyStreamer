@@ -14,9 +14,6 @@ public class SongsActivity extends ActionBarActivity implements SongsFragment.Ca
     private static final String LOG_TAG = SongsActivity.class.getSimpleName();
     public static final String SELECTED_ARTIST_ID = "selected_artist";
 
-    public SongsActivity() {
-    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
