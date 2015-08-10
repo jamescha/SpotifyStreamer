@@ -13,6 +13,8 @@ import com.jamescha.spotifystreamer.sync.ArtistSyncAdapter;
 public class SongsActivity extends ActionBarActivity implements SongsFragment.Callback {
     private static final String LOG_TAG = SongsActivity.class.getSimpleName();
     public static final String SELECTED_ARTIST_ID = "selected_artist";
+    public static final String SELECTED_SONG_URL = "selected_song_url";
+    public static final String SELECTED_SONG_IMAGE = "selected_song_image";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,8 +24,9 @@ public class SongsActivity extends ActionBarActivity implements SongsFragment.Ca
         setContentView(R.layout.activity_songs_actvity);
 
         Intent intent = getIntent();
-        Bundle bundle = new Bundle();
         String artistId = intent.getStringExtra(SELECTED_ARTIST_ID);
+
+        Bundle bundle = new Bundle();
         bundle.putString(ArtistSyncAdapter.ARTIST_ID_KEY, artistId);
         bundle.putInt(ArtistSyncAdapter.SEARCH_TYPE, ArtistSyncAdapter.SONG_SEARCH);
 
@@ -43,7 +46,12 @@ public class SongsActivity extends ActionBarActivity implements SongsFragment.Ca
     }
 
     @Override
-    public void onItemSelected() {
+    public void onItemSelected(String url, String songImage, Boolean mTwoPane) {
+        Intent intent = new Intent(this, MediaPlayerActivity.class);
+        intent.putExtra(SELECTED_SONG_URL, url);
+        intent.putExtra(SELECTED_SONG_IMAGE, songImage);
+        intent.putExtra(MainActivity.TWO_PANE, mTwoPane);
+        startActivity(intent);
 
     }
 }

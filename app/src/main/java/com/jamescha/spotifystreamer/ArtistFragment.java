@@ -53,10 +53,10 @@ public class ArtistFragment extends Fragment implements LoaderManager.LoaderCall
     private Toast mToast;
     private Handler mHandler;
     private int mPosition = ListView.INVALID_POSITION;
-    private boolean mUseTwoFragmentView;
     private SearchView artistNameSearch;
     private ConnectivityManager connectivityManager;
     private NetworkInfo activeNetwork;
+    private static String artistName = "";
 
     public interface Callback {
         void onItemSelected(String id);
@@ -77,6 +77,28 @@ public class ArtistFragment extends Fragment implements LoaderManager.LoaderCall
         MenuItem searchItem = menu.findItem(R.id.menu_search);
         artistNameSearch = (android.support.v7.widget.SearchView) searchItem.getActionView();
 
+        mHandler = new Handler(Looper.getMainLooper()) {
+            @Override
+            public void handleMessage(Message msg) {
+                switch (msg.what) {
+                    case TASK_COMPLETE: {
+                        if (mToast != null) {
+                            mToast.cancel();
+                        }
+                        mToast = Toast.makeText(getActivity(),
+                                "Artist with Name " +
+                                        artistName +
+                                        " not found.",
+                                Toast.LENGTH_SHORT);
+                        mToast.show();
+                    }
+                    default: {
+                        super.handleMessage(msg);
+                    }
+                }
+            }
+        };
+
         artistNameSearch.setOnQueryTextListener(new android.support.v7.widget.SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(final String query) {
@@ -86,8 +108,8 @@ public class ArtistFragment extends Fragment implements LoaderManager.LoaderCall
                     Bundle bundle = new Bundle();
                     bundle.putString(ARTIST_NAME_KEY, query);
                     bundle.putBoolean(ARTIST_SEARCH_KEY, true);
-                    bundle.putBoolean(ARTIST_SEARCH_KEY, true);
                     ArtistSyncAdapter.syncImmediately(getActivity(), bundle, mHandler);
+                    artistName = query;
                 } else {
                     if (mToast != null) {
                         mToast.cancel();
@@ -107,29 +129,8 @@ public class ArtistFragment extends Fragment implements LoaderManager.LoaderCall
                     bundle.putString(ARTIST_NAME_KEY, newText);
                     bundle.putBoolean(ARTIST_SEARCH_KEY, false);
                     bundle.putInt(ArtistSyncAdapter.SEARCH_TYPE, ArtistSyncAdapter.ARTIST_SEARCH);
+                    artistName = newText;
                     ArtistSyncAdapter.syncImmediately(getActivity(), bundle, mHandler);
-
-                    mHandler = new Handler(Looper.getMainLooper()) {
-                        @Override
-                        public void handleMessage(Message msg) {
-                            switch (msg.what) {
-                                case TASK_COMPLETE: {
-                                    if (mToast != null) {
-                                        mToast.cancel();
-                                    }
-                                    mToast = Toast.makeText(getActivity(),
-                                            "Artist with Name " +
-                                                    newText +
-                                                    " not found.",
-                                            Toast.LENGTH_SHORT);
-                                    mToast.show();
-                                }
-                                default: {
-                                    super.handleMessage(msg);
-                                }
-                            }
-                        }
-                    };
                 } else {
                     if (mToast != null) {
                         mToast.cancel();
@@ -225,5 +226,15 @@ public class ArtistFragment extends Fragment implements LoaderManager.LoaderCall
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
         mArtistAdapter.swapCursor(null);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        Bundle bundle = new Bundle();
+        bundle.putString(ARTIST_NAME_KEY, artistName);
+        bundle.putBoolean(ARTIST_SEARCH_KEY, true);
+        ArtistSyncAdapter.syncImmediately(getActivity(), bundle, mHandler);
     }
 }

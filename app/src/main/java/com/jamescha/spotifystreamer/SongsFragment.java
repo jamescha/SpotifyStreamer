@@ -15,6 +15,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.jamescha.spotifystreamer.data.SpotifyContract;
+import com.jamescha.spotifystreamer.sync.ArtistSyncAdapter;
 
 
 /**
@@ -26,6 +27,8 @@ public class SongsFragment extends Fragment implements LoaderManager.LoaderCallb
     public static final int COL_ALBUM_NAME = 1;
     public static final int COL_ALBUM_IMAGE = 2;
     public static final int COL_SONG_NAME = 3;
+    public static final int COL_PREVIEW_URL = 4;
+    public static final int COL_SONG_IMAGE = 5;
 
     private SongsAdapter mSongAdapter;
     private ListView songListView;
@@ -37,11 +40,16 @@ public class SongsFragment extends Fragment implements LoaderManager.LoaderCallb
             SpotifyContract.SongsEntry.TABLE_NAME + "." + SpotifyContract.SongsEntry._ID,
             SpotifyContract.SongsEntry.COLUMN_ALBUM_NAME,
             SpotifyContract.SongsEntry.COLUMN_ALBUM_ART_SMALL,
-            SpotifyContract.SongsEntry.COLUMN_SONG_NAME
+            SpotifyContract.SongsEntry.COLUMN_SONG_NAME,
+            SpotifyContract.SongsEntry.COLUMN_PREVIEW_URL,
+            SpotifyContract.SongsEntry.COLUMN_ALBUM_ART_LARGE
     };
 
+    private String artistId;
+    private Boolean mTwoPane;
+
     public interface Callback {
-        void onItemSelected();
+        void onItemSelected(String url, String songImage, Boolean mTwoPane);
     }
 
     public SongsFragment() {
@@ -50,12 +58,24 @@ public class SongsFragment extends Fragment implements LoaderManager.LoaderCallb
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        mTwoPane = getActivity().getIntent().getBooleanExtra(MainActivity.TWO_PANE, true);
+
+        if (getArguments() != null) {
+            Bundle bundle = new Bundle();
+            artistId = getArguments().getString(SongsActivity.SELECTED_ARTIST_ID);
+            mTwoPane = getArguments().getBoolean(MainActivity.TWO_PANE);
+            Log.d(LOG_TAG, "Artist Id is: " + artistId);
+            bundle.putString(ArtistSyncAdapter.ARTIST_ID_KEY, artistId);
+            bundle.putInt(ArtistSyncAdapter.SEARCH_TYPE, ArtistSyncAdapter.SONG_SEARCH);
+            ArtistSyncAdapter.syncImmediately(getActivity(), bundle, null);
+        }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater,
                              ViewGroup container,
-                             Bundle savedInstanceState) {
+                             final Bundle savedInstanceState) {
 
         mSongAdapter = new SongsAdapter(getActivity(), null, 0);
 
@@ -69,8 +89,19 @@ public class SongsFragment extends Fragment implements LoaderManager.LoaderCallb
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Cursor cursor = (Cursor) parent.getItemAtPosition(position);
                 if (cursor != null) {
-                    ((Callback) getActivity())
-                            .onItemSelected();
+
+                    if (mTwoPane) {
+                        String url = cursor.getString(COL_PREVIEW_URL);
+                        String songImage = cursor.getString(COL_SONG_IMAGE);
+
+
+                    } else {
+                        String url = cursor.getString(COL_PREVIEW_URL);
+                        String songImage = cursor.getString(COL_SONG_IMAGE);
+
+                        ((Callback) getActivity())
+                                .onItemSelected(url, songImage, mTwoPane);
+                    }
                 }
                 mPosition = position;
             }
