@@ -60,6 +60,7 @@ public class MainActivity extends ActionBarActivity implements ArtistFragment.Ca
         } else {
             Intent intent = new Intent(this, SongsActivity.class);
             intent.putExtra(SELECTED_ARTIST_ID, artistId);
+            intent.putExtra(TWO_PANE, mTwoPane);
             startActivity(intent);
         }
 

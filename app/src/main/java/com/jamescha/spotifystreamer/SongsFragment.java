@@ -1,5 +1,6 @@
 package com.jamescha.spotifystreamer;
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -59,8 +60,6 @@ public class SongsFragment extends Fragment implements LoaderManager.LoaderCallb
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mTwoPane = getActivity().getIntent().getBooleanExtra(MainActivity.TWO_PANE, true);
-
         if (getArguments() != null) {
             Bundle bundle = new Bundle();
             artistId = getArguments().getString(SongsActivity.SELECTED_ARTIST_ID);
@@ -69,6 +68,8 @@ public class SongsFragment extends Fragment implements LoaderManager.LoaderCallb
             bundle.putString(ArtistSyncAdapter.ARTIST_ID_KEY, artistId);
             bundle.putInt(ArtistSyncAdapter.SEARCH_TYPE, ArtistSyncAdapter.SONG_SEARCH);
             ArtistSyncAdapter.syncImmediately(getActivity(), bundle, null);
+        } else {
+            mTwoPane = getActivity().getIntent().getBooleanExtra(MainActivity.TWO_PANE, true);
         }
     }
 
@@ -94,6 +95,12 @@ public class SongsFragment extends Fragment implements LoaderManager.LoaderCallb
                         String url = cursor.getString(COL_PREVIEW_URL);
                         String songImage = cursor.getString(COL_SONG_IMAGE);
 
+                        Intent intent = new Intent(getActivity(), MediaPlayerActivity.class);
+                        intent.putExtra(SongsActivity.SELECTED_SONG_URL, url);
+                        intent.putExtra(SongsActivity.SELECTED_SONG_IMAGE, songImage);
+                        intent.putExtra(MainActivity.TWO_PANE, mTwoPane);
+
+                        startActivity(intent);
 
                     } else {
                         String url = cursor.getString(COL_PREVIEW_URL);
