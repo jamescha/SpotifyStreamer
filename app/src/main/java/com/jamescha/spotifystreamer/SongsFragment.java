@@ -1,10 +1,11 @@
 package com.jamescha.spotifystreamer;
 
-import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -95,19 +96,23 @@ public class SongsFragment extends Fragment implements LoaderManager.LoaderCallb
                         String url = cursor.getString(COL_PREVIEW_URL);
                         String songImage = cursor.getString(COL_SONG_IMAGE);
 
-                        Intent intent = new Intent(getActivity(), MediaPlayerActivity.class);
-                        intent.putExtra(SongsActivity.SELECTED_SONG_URL, url);
-                        intent.putExtra(SongsActivity.SELECTED_SONG_IMAGE, songImage);
-                        intent.putExtra(MainActivity.TWO_PANE, mTwoPane);
+                        Bundle bundle = new Bundle();
+                        bundle.putString(SongsActivity.SELECTED_SONG_URL, url);
+                        bundle.putString(SongsActivity.SELECTED_SONG_IMAGE, songImage);
+                        bundle.putBoolean(MainActivity.TWO_PANE, mTwoPane);
 
-                        startActivity(intent);
+                        //startActivity(intent);
+
+                        showDialog(bundle);
 
                     } else {
                         String url = cursor.getString(COL_PREVIEW_URL);
                         String songImage = cursor.getString(COL_SONG_IMAGE);
 
-                        ((Callback) getActivity())
-                                .onItemSelected(url, songImage, mTwoPane);
+                        //showDialog();
+
+//                        ((Callback) getActivity())
+//                                .onItemSelected(url, songImage, mTwoPane);
                     }
                 }
                 mPosition = position;
@@ -160,5 +165,27 @@ public class SongsFragment extends Fragment implements LoaderManager.LoaderCallb
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
 
+    }
+
+    public void showDialog(Bundle bundle) {
+        FragmentManager fragmentManager = getFragmentManager();
+        MediaPlayerFragment newFragment = new MediaPlayerFragment();
+
+        newFragment.setArguments(bundle);
+
+        if (mTwoPane) {
+            // The device is using a large layout, so show the fragment as a dialog
+            newFragment.show(fragmentManager, "dialog");
+        } else {
+            // The device is smaller, so show the fragment fullscreen
+            FragmentTransaction transaction = fragmentManager.beginTransaction();
+            // For a little polish, specify a transition animation
+            transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+            // To make it fullscreen, use the 'content' root view as the container
+            // for the fragment, which is always the root view for the activity
+            transaction.add(R.id.songs_fragment, newFragment)
+                    .addToBackStack(null).commit();
+
+        }
     }
 }
