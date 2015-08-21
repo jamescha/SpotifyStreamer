@@ -27,11 +27,9 @@ public class MediaPlayerFragment extends DialogFragment {
     private static final String LOG_TAG = MediaPlayerFragment.class.getSimpleName();
     private Intent mediaPlayerIntent;
     private Boolean playPause = true;
-    private BroadcastReceiver trackLengthReceiver;
     private BroadcastReceiver seekReceiver;
     private SeekBar scrubBar;
     TextView duration;
-    TextView fullTrackDuration;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -50,23 +48,6 @@ public class MediaPlayerFragment extends DialogFragment {
                 }
             }
         };
-
-        trackLengthReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                int trackLength = intent.getIntExtra(MediaPlayerService.TRACK_LENGTH, 0);
-
-                if(scrubBar != null) {
-                    if(trackLength!=0) {
-                        scrubBar.setMax(trackLength);
-                    }
-                }
-
-                if(fullTrackDuration != null) {
-                    fullTrackDuration.setText(String.valueOf(TimeUnit.MILLISECONDS.toMinutes(trackLength)));
-                }
-            }
-        };
     }
 
     @Override
@@ -80,23 +61,26 @@ public class MediaPlayerFragment extends DialogFragment {
         final String sArtistName = getArguments().getString(SongsActivity.SELECTED_ARTIST_NAME);
         final String sAlbumName = getArguments().getString(SongsActivity.SELECTED_ALBUM_NAME);
         final String sTrackName = getArguments().getString(SongsActivity.SELECTED_SONG_NAME);
+        final int mDuration = getArguments().getInt(SongsActivity.SELECTED_DURATION);
 
-        TextView artistName = (TextView) view.findViewById(R.id.media_player_artist_name);
-        TextView albumName = (TextView) view.findViewById(R.id.media_player_album_name);
-        TextView trackName = (TextView) view.findViewById(R.id.media_player_track_name);
-        duration = (TextView) view.findViewById(R.id.media_player_duration);
-        fullTrackDuration = (TextView) view.findViewById(R.id.media_player_song_full_length);
-
-        ImageButton previousButton = (ImageButton) view.findViewById(R.id.media_player_previous);
-        ImageButton nextButton = (ImageButton) view.findViewById(R.id.media_player_next);
+        final TextView artistName = (TextView) view.findViewById(R.id.media_player_artist_name);
+        final TextView albumName = (TextView) view.findViewById(R.id.media_player_album_name);
+        final TextView trackName = (TextView) view.findViewById(R.id.media_player_track_name);
+        final TextView fullTrackDuration = (TextView) view.findViewById(R.id.media_player_song_full_length);
+        final ImageButton previousButton = (ImageButton) view.findViewById(R.id.media_player_previous);
+        final ImageButton nextButton = (ImageButton) view.findViewById(R.id.media_player_next);
+        final ImageView songImageView = (ImageView) view.findViewById(R.id.media_player_song_image);
         final ImageButton playPauseButton = (ImageButton) view.findViewById(R.id.media_player_play_pause);
-        scrubBar = (SeekBar) view.findViewById(R.id.media_player_scrub_bar);
-        scrubBar.setClickable(false);
 
-        ImageView songImageView = (ImageView) view.findViewById(R.id.media_player_song_image);
+        duration = (TextView) view.findViewById(R.id.media_player_duration);
+        scrubBar = (SeekBar) view.findViewById(R.id.media_player_scrub_bar);
+
+        scrubBar.setMax(mDuration);
+        scrubBar.setClickable(false);
 
         Picasso.with(getActivity().getApplicationContext()).load(songImage).into(songImageView);
 
+        fullTrackDuration.setText(mDuration);
         artistName.setText(sArtistName);
         albumName.setText(sAlbumName);
         trackName.setText(sTrackName);
@@ -124,7 +108,6 @@ public class MediaPlayerFragment extends DialogFragment {
                 if (playPause) {
 
                     mediaPlayerIntent.putExtra(SongsActivity.SELECTED_SONG_URL, songUrl);
-                    mediaPlayerIntent.putExtra(SongsActivity.SELECTED_SONG_IMAGE, songImage);
                     mediaPlayerIntent.setAction(MediaPlayerService.ACTION_PLAY);
                     getActivity().getApplicationContext().startService(mediaPlayerIntent);
                     playPauseButton.setImageResource(android.R.drawable.ic_media_pause);
@@ -163,13 +146,11 @@ public class MediaPlayerFragment extends DialogFragment {
     public void onStart() {
         super.onStart();
         LocalBroadcastManager.getInstance(getActivity()).registerReceiver(seekReceiver, new IntentFilter(MediaPlayerService.MEDIA_PLAYER_SEEK));
-        LocalBroadcastManager.getInstance(getActivity()).registerReceiver(trackLengthReceiver, new IntentFilter(MediaPlayerService.MEDIA_PLAYER_TRACK_LENGTH));
     }
 
     @Override
     public void onStop() {
         super.onStop();
         LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(seekReceiver);
-        LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(trackLengthReceiver);
     }
 }

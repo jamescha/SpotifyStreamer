@@ -74,6 +74,8 @@ public class SpotifyContract {
 
         public static final String COLUMN_PREVIEW_URL = "preview_uri";
 
+        public static final String COLUMN_DURATION = "duration";
+
         public static Uri buildSongsUri(long id) {
             return ContentUris.withAppendedId(CONTENT_URI, id);
         }
