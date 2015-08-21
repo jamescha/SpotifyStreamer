@@ -4,6 +4,7 @@ import android.app.Service;
 import android.content.Intent;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.os.Handler;
 import android.os.IBinder;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
@@ -23,8 +24,8 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
     public static final String CURRENT_POSITION = "current_position";
     private MediaPlayer mMediaPlayer = null;
     private Integer currentPosition;
-
-    LocalBroadcastManager broadcastManager;
+    private Handler mHandler = new Handler();
+    private LocalBroadcastManager broadcastManager;
 
     public int onStartCommand(Intent intent, int flags, int songId) {
 
@@ -75,7 +76,10 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
                 currentPosition = mMediaPlayer.getCurrentPosition();
                 intent.putExtra(CURRENT_POSITION, (int) currentPosition);
                 broadcastManager.sendBroadcast(intent);
+                mHandler.postDelayed(updateRunTime, 10);
             }
+
+
         }
     };
 }

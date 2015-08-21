@@ -59,10 +59,7 @@ public class SpotifyContract {
         public static final String CONTENT_ITEM_TYPE =
                 ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_SONGS;
 
-
         public static final String TABLE_NAME = "songs";
-
-        public static final String COLUMN_ARTIST_NAME = "artist_name";
 
         public static final String COLUMN_SONG_NAME = "song_name";
 
@@ -73,6 +70,8 @@ public class SpotifyContract {
         public static final String COLUMN_ALBUM_NAME = "album_name";
 
         public static final String COLUMN_PREVIEW_URL = "preview_uri";
+
+        public static final String COLUMN_ARTIST_NAME = "artist_name";
 
         public static final String COLUMN_DURATION = "duration";
 

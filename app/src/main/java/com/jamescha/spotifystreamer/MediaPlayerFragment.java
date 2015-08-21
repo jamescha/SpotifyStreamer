@@ -21,8 +21,6 @@ import android.widget.TextView;
 import com.jamescha.spotifystreamer.mediaPlayer.MediaPlayerService;
 import com.squareup.picasso.Picasso;
 
-import java.util.concurrent.TimeUnit;
-
 public class MediaPlayerFragment extends DialogFragment {
     private static final String LOG_TAG = MediaPlayerFragment.class.getSimpleName();
     private Intent mediaPlayerIntent;
@@ -44,7 +42,8 @@ public class MediaPlayerFragment extends DialogFragment {
                 }
 
                 if(duration != null) {
-                    duration.setText(String.valueOf(TimeUnit.MILLISECONDS.toMinutes(currentTime)));
+                    String result = String.format("%02d:%02d", (currentTime % (60*60*1000))/(60*1000), (currentTime % (60*1000))/1000);
+                    duration.setText(result);
                 }
             }
         };
@@ -80,7 +79,9 @@ public class MediaPlayerFragment extends DialogFragment {
 
         Picasso.with(getActivity().getApplicationContext()).load(songImage).into(songImageView);
 
-        fullTrackDuration.setText(mDuration);
+        duration.setText("00:00");
+        String result = String.format("%02d:%02d", (mDuration % (60*60*1000))/(60*1000), (mDuration % (60*1000))/1000);
+        fullTrackDuration.setText(result);
         artistName.setText(sArtistName);
         albumName.setText(sAlbumName);
         trackName.setText(sTrackName);
@@ -145,7 +146,8 @@ public class MediaPlayerFragment extends DialogFragment {
     @Override
     public void onStart() {
         super.onStart();
-        LocalBroadcastManager.getInstance(getActivity()).registerReceiver(seekReceiver, new IntentFilter(MediaPlayerService.MEDIA_PLAYER_SEEK));
+        LocalBroadcastManager.getInstance(getActivity()).registerReceiver(seekReceiver,
+                new IntentFilter(MediaPlayerService.MEDIA_PLAYER_SEEK));
     }
 
     @Override
