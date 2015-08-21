@@ -121,6 +121,7 @@ public class ArtistSyncAdapter extends AbstractThreadedSyncAdapter {
                             songValues.put(SpotifyContract.SongsEntry.COLUMN_SONG_NAME, track.name);
                             songValues.put(SpotifyContract.SongsEntry.COLUMN_ALBUM_NAME, track.album.name);
                             songValues.put(SpotifyContract.SongsEntry.COLUMN_PREVIEW_URL, track.preview_url);
+                            songValues.put(SpotifyContract.SongsEntry.COLUMN_ARTIST_NAME, track.artists.get(0).name);
 
                             //Try to get optimal sized album cover
                             Pair<String, Integer> largeImageUrl = new Pair<>(IMAGE_NOT_FOUND, 0);

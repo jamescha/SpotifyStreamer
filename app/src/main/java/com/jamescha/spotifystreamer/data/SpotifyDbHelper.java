@@ -33,7 +33,8 @@ public class SpotifyDbHelper extends SQLiteOpenHelper {
                 SongsEntry.COLUMN_ALBUM_NAME + " TEXT NOT NULL, " +
                 SongsEntry.COLUMN_ALBUM_ART_SMALL + " TEXT NOT NULL, " +
                 SongsEntry.COLUMN_ALBUM_ART_LARGE + " TEXT NOT NULL, " +
-                SongsEntry.COLUMN_PREVIEW_URL + " TEXT NOT NULL " + ");";
+                SongsEntry.COLUMN_PREVIEW_URL + " TEXT NOT NULL, " +
+                SongsEntry.COLUMN_ARTIST_NAME + " TEXT NOT NULL" + ");";
 
         db.execSQL(SQL_CREATE_ARTIST_TABLE);
         db.execSQL(SQL_CREATE_SONGS_TABLE);

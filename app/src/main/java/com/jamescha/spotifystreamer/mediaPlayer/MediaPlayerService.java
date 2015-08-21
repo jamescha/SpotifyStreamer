@@ -19,6 +19,7 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
     private final String LOG_TAG = MediaPlayerService.class.getSimpleName();
     public static final String ACTION_PLAY = "com.jamescha.spotifystreamer.action.PLAY";
     public static final String ACTION_PAUSE = "com.jamescha.spotifystreamer.action.PAUSE";
+    public static final String MEDIA_PLAYER_TRACK_LENGTH= "com.jamescha.spottifystream.MediaPlayerService.TRACKLENGTH";
     public static final String MEDIA_PLAYER_SEEK = "com.jamescha.spottifystream.MediaPlayerService.SEEKBAR";
     public static final String CURRENT_POSITION = "current_position";
     public static final String TRACK_LENGTH = "track_length";
@@ -56,7 +57,7 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
 
     @Override
     public void onPrepared(MediaPlayer mp) {
-        Intent intent = new Intent(MEDIA_PLAYER_SEEK);
+        Intent intent = new Intent(MEDIA_PLAYER_TRACK_LENGTH);
         intent.putExtra(TRACK_LENGTH, mp.getDuration());
         broadcastManager.sendBroadcast(intent);
         mp.start();

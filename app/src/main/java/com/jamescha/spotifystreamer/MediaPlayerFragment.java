@@ -27,7 +27,8 @@ public class MediaPlayerFragment extends DialogFragment {
     private static final String LOG_TAG = MediaPlayerFragment.class.getSimpleName();
     private Intent mediaPlayerIntent;
     private Boolean playPause = true;
-    private BroadcastReceiver receiver;
+    private BroadcastReceiver trackLengthReceiver;
+    private BroadcastReceiver seekReceiver;
     private SeekBar scrubBar;
     TextView duration;
     TextView fullTrackDuration;
@@ -35,25 +36,35 @@ public class MediaPlayerFragment extends DialogFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        receiver = new BroadcastReceiver() {
+        seekReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
                 int currentTime = intent.getIntExtra(MediaPlayerService.CURRENT_POSITION, 0);
-                int trackLength = intent.getIntExtra(MediaPlayerService.TRACK_LENGTH, 0);
 
                 if(scrubBar != null) {
-                    scrubBar.setMax(trackLength);
                     scrubBar.setProgress(currentTime);
                 }
 
-//                if(duration != null) {
-//                    duration.setText(currentTime);
-//                }
-//
+                if(duration != null) {
+                    duration.setText(String.valueOf(TimeUnit.MILLISECONDS.toMinutes(currentTime)));
+                }
+            }
+        };
+
+        trackLengthReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                int trackLength = intent.getIntExtra(MediaPlayerService.TRACK_LENGTH, 0);
+
+                if(scrubBar != null) {
+                    if(trackLength!=0) {
+                        scrubBar.setMax(trackLength);
+                    }
+                }
+
                 if(fullTrackDuration != null) {
                     fullTrackDuration.setText(String.valueOf(TimeUnit.MILLISECONDS.toMinutes(trackLength)));
                 }
-
             }
         };
     }
@@ -66,6 +77,9 @@ public class MediaPlayerFragment extends DialogFragment {
 
         final String songUrl = getArguments().getString(SongsActivity.SELECTED_SONG_URL);
         final String songImage = getArguments().getString(SongsActivity.SELECTED_SONG_IMAGE);
+        final String sArtistName = getArguments().getString(SongsActivity.SELECTED_ARTIST_NAME);
+        final String sAlbumName = getArguments().getString(SongsActivity.SELECTED_ALBUM_NAME);
+        final String sTrackName = getArguments().getString(SongsActivity.SELECTED_SONG_NAME);
 
         TextView artistName = (TextView) view.findViewById(R.id.media_player_artist_name);
         TextView albumName = (TextView) view.findViewById(R.id.media_player_album_name);
@@ -82,6 +96,10 @@ public class MediaPlayerFragment extends DialogFragment {
         ImageView songImageView = (ImageView) view.findViewById(R.id.media_player_song_image);
 
         Picasso.with(getActivity().getApplicationContext()).load(songImage).into(songImageView);
+
+        artistName.setText(sArtistName);
+        albumName.setText(sAlbumName);
+        trackName.setText(sTrackName);
 
         previousButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -144,12 +162,14 @@ public class MediaPlayerFragment extends DialogFragment {
     @Override
     public void onStart() {
         super.onStart();
-        LocalBroadcastManager.getInstance(getActivity()).registerReceiver(receiver, new IntentFilter(MediaPlayerService.MEDIA_PLAYER_SEEK));
+        LocalBroadcastManager.getInstance(getActivity()).registerReceiver(seekReceiver, new IntentFilter(MediaPlayerService.MEDIA_PLAYER_SEEK));
+        LocalBroadcastManager.getInstance(getActivity()).registerReceiver(trackLengthReceiver, new IntentFilter(MediaPlayerService.MEDIA_PLAYER_TRACK_LENGTH));
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(receiver);
+        LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(seekReceiver);
+        LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(trackLengthReceiver);
     }
 }

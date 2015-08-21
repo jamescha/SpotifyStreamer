@@ -15,6 +15,9 @@ public class SongsActivity extends ActionBarActivity implements SongsFragment.Ca
     public static final String SELECTED_ARTIST_ID = "selected_artist";
     public static final String SELECTED_SONG_URL = "selected_song_url";
     public static final String SELECTED_SONG_IMAGE = "selected_song_image";
+    public static final String SELECTED_SONG_NAME = "selected_song_name";
+    public static final String SELECTED_ARTIST_NAME = "selected_artist_name";
+    public static final String SELECTED_ALBUM_NAME = "selected_album_name";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

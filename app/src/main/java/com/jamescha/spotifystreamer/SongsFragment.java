@@ -31,6 +31,7 @@ public class SongsFragment extends Fragment implements LoaderManager.LoaderCallb
     public static final int COL_SONG_NAME = 3;
     public static final int COL_PREVIEW_URL = 4;
     public static final int COL_SONG_IMAGE = 5;
+    public static final int COL_ARTIST_NAME =6;
 
     private SongsAdapter mSongAdapter;
     private ListView songListView;
@@ -44,7 +45,8 @@ public class SongsFragment extends Fragment implements LoaderManager.LoaderCallb
             SpotifyContract.SongsEntry.COLUMN_ALBUM_ART_SMALL,
             SpotifyContract.SongsEntry.COLUMN_SONG_NAME,
             SpotifyContract.SongsEntry.COLUMN_PREVIEW_URL,
-            SpotifyContract.SongsEntry.COLUMN_ALBUM_ART_LARGE
+            SpotifyContract.SongsEntry.COLUMN_ALBUM_ART_LARGE,
+            SpotifyContract.SongsEntry.COLUMN_ARTIST_NAME
     };
 
     private String artistId;
@@ -95,10 +97,16 @@ public class SongsFragment extends Fragment implements LoaderManager.LoaderCallb
                     if (mTwoPane) {
                         String url = cursor.getString(COL_PREVIEW_URL);
                         String songImage = cursor.getString(COL_SONG_IMAGE);
+                        String songName = cursor.getString(COL_SONG_NAME);
+                        String albumName = cursor.getString(COL_ALBUM_NAME);
+                        String artistName = cursor.getString(COL_ARTIST_NAME);
 
                         Bundle bundle = new Bundle();
                         bundle.putString(SongsActivity.SELECTED_SONG_URL, url);
                         bundle.putString(SongsActivity.SELECTED_SONG_IMAGE, songImage);
+                        bundle.putString(SongsActivity.SELECTED_ALBUM_NAME, albumName);
+                        bundle.putString(SongsActivity.SELECTED_SONG_NAME, songName);
+                        bundle.putString(SongsActivity.SELECTED_ARTIST_NAME, artistName);
                         bundle.putBoolean(MainActivity.TWO_PANE, mTwoPane);
 
                         //startActivity(intent);

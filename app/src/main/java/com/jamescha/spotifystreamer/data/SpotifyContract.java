@@ -62,6 +62,8 @@ public class SpotifyContract {
 
         public static final String TABLE_NAME = "songs";
 
+        public static final String COLUMN_ARTIST_NAME = "artist_name";
+
         public static final String COLUMN_SONG_NAME = "song_name";
 
         public static final String COLUMN_ALBUM_ART_SMALL = "album_art_small";
