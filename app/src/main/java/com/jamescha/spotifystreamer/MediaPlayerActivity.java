@@ -28,27 +28,6 @@ public class MediaPlayerActivity extends ActionBarActivity{
         String songImage = intent.getStringExtra(SongsActivity.SELECTED_SONG_IMAGE);
         mTwoPane = intent.getBooleanExtra(MainActivity.TWO_PANE, false);
 
-//        TextView artistName = (TextView) findViewById(R.id.media_player_artist_name);
-//        TextView albumName = (TextView) findViewById(R.id.media_player_album_name);
-//        TextView trackName = (TextView) findViewById(R.id.media_player_track_name);
-//        TextView duration = (TextView) findViewById(R.id.media_player_duration);
-//        TextView fullTrackDuration = (TextView) findViewById(R.id.media_player_song_full_length);
-//
-//        ImageButton previousButton = (ImageButton) findViewById(R.id.media_player_previous);
-//        ImageButton nextButton = (ImageButton) findViewById(R.id.media_player_next);
-//        ImageButton playPauseButton = (ImageButton) findViewById(R.id.media_player_play_pause);
-//
-//        ImageView scrubBar = (ImageView) findViewById(R.id.media_player_scrub_bar);
-//        ImageView songImageView = (ImageView) findViewById(R.id.media_player_song_image);
-//
-//        songImageView.setImageURI(Uri.parse(songImage));
-//
-//        previousButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Log.d(LOG_TAG, "Previous Button Pressed");
-//            }
-//        });
 //
 //        Intent mediaPlayerIntent = new Intent(this, MediaPlayerService.class);
 //

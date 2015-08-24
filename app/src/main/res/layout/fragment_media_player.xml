@@ -2,64 +2,93 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:paddingTop="10dp"
+    android:paddingBottom="10dp">
 
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/media_player_artist_name"/>
+        android:id="@+id/media_player_artist_name"
+        android:gravity="center"/>
+
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/media_player_album_name"/>
+        android:id="@+id/media_player_album_name"
+        android:gravity="center"/>
 
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/media_player_song_image"/>
+        android:id="@+id/media_player_song_image"
+        android:gravity="center"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"/>
 
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/media_player_track_name"/>
+        android:id="@+id/media_player_track_name"
+        android:gravity="center_horizontal"/>
 
     <SeekBar
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/media_player_scrub_bar"/>
+        android:id="@+id/media_player_scrub_bar"
+        android:gravity="center"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"/>
 
     <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/media_player_duration"/>
+            android:id="@+id/media_player_duration"
+            android:layout_weight="1"
+            android:gravity="left"
+            android:paddingLeft="15dp"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/media_player_song_full_length"/>
+            android:layout_weight="0"
+            android:id="@+id/media_player_song_full_length"
+            android:gravity="right"
+            android:paddingRight="15dp"/>
+
     </LinearLayout>
 
     <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp">
         <ImageButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/media_player_previous"
-            android:src="@android:drawable/ic_media_previous"/>
+            android:src="@android:drawable/ic_media_previous"
+            android:gravity="left"
+            android:layout_weight="1"/>
         <ImageButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/media_player_play_pause"/>
+            android:id="@+id/media_player_play_pause"
+            android:gravity="center"
+            android:layout_weight="1"/>
         <ImageButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/media_player_next"
-            android:src="@android:drawable/ic_media_next"/>
+            android:src="@android:drawable/ic_media_next"
+            android:gravity="right"
+            android:layout_weight="1"/>
     </LinearLayout>
 
 </LinearLayout>

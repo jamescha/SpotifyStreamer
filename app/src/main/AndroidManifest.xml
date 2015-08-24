@@ -74,7 +74,7 @@
                 android:resource="@xml/syncadapter" />
         </service>
 
-        <service android:name=".mediaPlayer.MediaPlayerService">
+        <service android:name=".MediaPlayerService">
             <intent-filter>
                 <action android:name="com.jamescha.spotifystreamer.action.PLAY"/>
             </intent-filter>
