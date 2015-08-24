@@ -19,6 +19,9 @@ import android.widget.ListView;
 import com.jamescha.spotifystreamer.data.SpotifyContract;
 import com.jamescha.spotifystreamer.sync.ArtistSyncAdapter;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 
 /**
  * A placeholder fragment containing a simple view.
@@ -32,13 +35,15 @@ public class SongsFragment extends Fragment implements LoaderManager.LoaderCallb
     public static final int COL_PREVIEW_URL = 4;
     public static final int COL_SONG_IMAGE = 5;
     public static final int COL_ARTIST_NAME = 6;
-    public static final int COL_DURATION = 7;
+    public static final String POSITION = "position";
+    public static final String SONG_LIST = "song_list";
 
     private SongsAdapter mSongAdapter;
     private ListView songListView;
     private int mPosition = ListView.INVALID_POSITION;
 
     private static final String SONG_SELECTED_KEY = "song_selected_key";
+
     private static final int SONG_LOADER = 0;
     private static final String[] SONG_COLUMNS = {
             SpotifyContract.SongsEntry.TABLE_NAME + "." + SpotifyContract.SongsEntry._ID,
@@ -47,15 +52,14 @@ public class SongsFragment extends Fragment implements LoaderManager.LoaderCallb
             SpotifyContract.SongsEntry.COLUMN_SONG_NAME,
             SpotifyContract.SongsEntry.COLUMN_PREVIEW_URL,
             SpotifyContract.SongsEntry.COLUMN_ALBUM_ART_LARGE,
-            SpotifyContract.SongsEntry.COLUMN_ARTIST_NAME,
-            SpotifyContract.SongsEntry.COLUMN_DURATION
+            SpotifyContract.SongsEntry.COLUMN_ARTIST_NAME
     };
 
     private String artistId;
     private Boolean mTwoPane;
 
     public interface Callback {
-        void onItemSelected(String url, String songImage, Boolean mTwoPane);
+        void onItemSelected(ArrayList<HashMap<String,String>> songList, int position, String url);
     }
 
     public SongsFragment() {
@@ -83,6 +87,7 @@ public class SongsFragment extends Fragment implements LoaderManager.LoaderCallb
                              ViewGroup container,
                              final Bundle savedInstanceState) {
 
+        final ArrayList<HashMap<String,String>> songsList = new ArrayList<>();
         mSongAdapter = new SongsAdapter(getActivity(), null, 0);
 
         View rootView = inflater.inflate(R.layout.fragment_songs, container, false);
@@ -93,38 +98,35 @@ public class SongsFragment extends Fragment implements LoaderManager.LoaderCallb
 
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Cursor cursor = (Cursor) parent.getItemAtPosition(position);
-                if (cursor != null) {
 
+
+                Cursor cursor1 = mSongAdapter.getCursor();
+                while (!cursor1.isAfterLast()) {
+                    HashMap<String, String> songs = new HashMap<>();
+                    songs.put(SongsActivity.SELECTED_SONG_URL, cursor1.getString(COL_PREVIEW_URL));
+                    songs.put(SongsActivity.SELECTED_SONG_IMAGE, cursor1.getString(COL_SONG_IMAGE));
+                    songs.put(SongsActivity.SELECTED_ALBUM_NAME, cursor1.getString(COL_ALBUM_NAME));
+                    songs.put(SongsActivity.SELECTED_ARTIST_NAME, cursor1.getString(COL_ARTIST_NAME));
+                    songs.put(SongsActivity.SELECTED_SONG_NAME, cursor1.getString(COL_SONG_NAME));
+                    songsList.add(songs);
+                    cursor1.moveToNext();
+                }
+
+                Cursor cursor = (Cursor) parent.getItemAtPosition(position);
+
+                if (cursor != null) {
                     if (mTwoPane) {
                         String url = cursor.getString(COL_PREVIEW_URL);
-                        String songImage = cursor.getString(COL_SONG_IMAGE);
-                        String songName = cursor.getString(COL_SONG_NAME);
-                        String albumName = cursor.getString(COL_ALBUM_NAME);
-                        String artistName = cursor.getString(COL_ARTIST_NAME);
-                        Integer duration = cursor.getInt(COL_DURATION);
-
                         Bundle bundle = new Bundle();
+                        bundle.putSerializable(SONG_LIST, songsList);
                         bundle.putString(SongsActivity.SELECTED_SONG_URL, url);
-                        bundle.putString(SongsActivity.SELECTED_SONG_IMAGE, songImage);
-                        bundle.putString(SongsActivity.SELECTED_ALBUM_NAME, albumName);
-                        bundle.putString(SongsActivity.SELECTED_SONG_NAME, songName);
-                        bundle.putString(SongsActivity.SELECTED_ARTIST_NAME, artistName);
-                        bundle.putInt(SongsActivity.SELECTED_DURATION, duration);
                         bundle.putBoolean(MainActivity.TWO_PANE, mTwoPane);
-
-                        //startActivity(intent);
 
                         showDialog(bundle);
 
                     } else {
-                        String url = cursor.getString(COL_PREVIEW_URL);
-                        String songImage = cursor.getString(COL_SONG_IMAGE);
-
-                        //showDialog();
-
-//                        ((Callback) getActivity())
-//                                .onItemSelected(url, songImage, mTwoPane);
+                        ((Callback) getActivity())
+                                .onItemSelected(songsList, position, cursor.getString(COL_PREVIEW_URL));
                     }
                 }
                 mPosition = position;
@@ -200,4 +202,5 @@ public class SongsFragment extends Fragment implements LoaderManager.LoaderCallb
 
         }
     }
+
 }

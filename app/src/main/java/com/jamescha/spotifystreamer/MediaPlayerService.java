@@ -1,17 +1,28 @@
 package com.jamescha.spotifystreamer;
 
+import android.app.Notification;
+import android.app.PendingIntent;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.net.wifi.WifiManager;
 import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.PowerManager;
 import android.util.Log;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
+
 import java.io.IOException;
+import java.util.HashMap;
 
 /**
  * Created by jamescha on 7/10/15.
@@ -20,21 +31,17 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
     private final String LOG_TAG = MediaPlayerService.class.getSimpleName();
     private final IBinder iBinder = new LocalBinder();
     public static final String ACTION_PLAY = "com.jamescha.spotifystreamer.action.PLAY";
-    public static final String ACTION_PAUSE = "com.jamescha.spotifystreamer.action.PAUSE";
-    public static final String MEDIA_PLAYER_SEEK = "com.jamescha.spotifystream.MediaPlayerService.SEEKBAR";
-    public static final String SONG_DURATION = "com.jamescha.spotifystream.MediaPlayerService.SONGDURATION";
-    public static final String CURRENT_POSITION = "current_position";
-    public static final String SONG_LENGTH = "song_length";
+    private static final int NOTIFICATION_ID = 1;
     private MediaPlayer mMediaPlayer = null;
-//    private int currentPosition;
-//    private int song_length;
     private Handler mHandler = new Handler();
-    //private Intent songLengthIntent = new Intent(SONG_DURATION);
-   // private LocalBroadcastManager broadcastManager;
-    private SeekBar srubBar;
+    private SeekBar scrubBar;
     private TextView duration;
     private String url;
+    private TextView fullTrackDuration;
     private Boolean isPrepared = false;
+    private WifiManager.WifiLock wifiLock;
+    private PendingIntent pi;
+    private Notification.Builder notificationBuilder;
 
     public class LocalBinder extends Binder {
         MediaPlayerService getService() {
@@ -42,13 +49,32 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
         }
     }
 
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        mMediaPlayer = new MediaPlayer();
+        mMediaPlayer.setWakeMode(getApplicationContext(), PowerManager.PARTIAL_WAKE_LOCK);
+        wifiLock = ((WifiManager) getSystemService(Context.WIFI_SERVICE))
+                .createWifiLock(WifiManager.WIFI_MODE_FULL, "mylock");
+        wifiLock.acquire();
+        pi = PendingIntent.getActivity(getApplicationContext(), 0,
+                new Intent(getApplicationContext(), MediaPlayerFragment.class),
+                PendingIntent.FLAG_UPDATE_CURRENT);
+
+        notificationBuilder = new Notification.Builder(getApplicationContext())
+                .setSmallIcon(android.R.drawable.ic_media_play)
+                .setContentTitle("Fantastic Spotify App")
+                .setContentIntent(pi)
+                .setOngoing(true);
+
+    }
+
     public int onStartCommand(Intent intent, int flags, int songId) {
 
-       // broadcastManager = LocalBroadcastManager.getInstance(getApplicationContext());
         if (intent != null) {
             if (intent.getAction().equals(ACTION_PLAY)) {
                 url = intent.getStringExtra(SongsActivity.SELECTED_SONG_URL);
-                mMediaPlayer = new MediaPlayer();
+                mMediaPlayer.reset();
                 mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
                 try {
                     mMediaPlayer.setDataSource(url);
@@ -59,7 +85,6 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
                 mMediaPlayer.setOnPreparedListener(this);
                 mMediaPlayer.prepareAsync();
             }
-
         }
         return 0;
     }
@@ -68,27 +93,16 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
     public void onPrepared(MediaPlayer mp) {
         isPrepared = true;
         updateRunTime.run();
+
+        playSong(MediaPlayerFragment.duration,
+                MediaPlayerFragment.scrubBar,
+                MediaPlayerFragment.fullTrackDuration,
+                MediaPlayerFragment.songInfo);
     }
 
     @Override
     public IBinder onBind(Intent intent) {
         return iBinder;
-    }
-
-    public int getDuration () {
-        if (mMediaPlayer != null && isPrepared) {
-            return mMediaPlayer.getDuration();
-        } else {
-            return 0;
-        }
-    }
-
-    public int getCurrentPosition () {
-        if (mMediaPlayer != null && isPrepared) {
-            return mMediaPlayer.getCurrentPosition();
-        } else {
-            return 0;
-        }
     }
 
     public Boolean pauseSong () {
@@ -100,28 +114,51 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
         return false;
     }
 
-    public Boolean playSong (TextView duration, SeekBar scrubBar, TextView fullTrackDuration) {
+    public Boolean playSong (TextView duration,
+                             SeekBar scrubBar,
+                             TextView fullTrackDuration,
+                             HashMap<String,String> songInfo) {
         if (mMediaPlayer != null && isPrepared) {
             Log.d(LOG_TAG, "Play Song");
             mMediaPlayer.start();
-            this.srubBar = scrubBar;
+            this.scrubBar = scrubBar;
             this.duration = duration;
+            this.fullTrackDuration = fullTrackDuration;
             int mDuration = mMediaPlayer.getDuration();
             scrubBar.setMax(mDuration);
             String result = String.format("%02d:%02d", (mDuration % (60 * 60 * 1000)) / (60 * 1000), (mDuration % (60 * 1000)) / 1000);
             fullTrackDuration.setText(result);
+            StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.append("Playing: ")
+                    .append(songInfo.get(SongsActivity.SELECTED_SONG_NAME))
+                    .append(" by ")
+                    .append(songInfo.get(SongsActivity.SELECTED_ARTIST_NAME));
+
+
+            Picasso.with(getApplicationContext())
+                    .load(songInfo.get(SongsActivity.SELECTED_SONG_IMAGE)).into(new Target() {
+                @Override
+                public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                    notificationBuilder.setLargeIcon(bitmap);
+                }
+
+                @Override
+                public void onBitmapFailed(Drawable errorDrawable) {
+
+                }
+
+                @Override
+                public void onPrepareLoad(Drawable placeHolderDrawable) {
+
+                }
+            });
+
+            notificationBuilder.setContentText(stringBuilder.toString());
+            startForeground(NOTIFICATION_ID, notificationBuilder.build());
             return true;
         }
         Log.d(LOG_TAG, "MediaPlayer not ready to play.");
         return false;
-    }
-
-    public Boolean mediaPlayerState() {
-       return isPrepared;
-    }
-
-    public MediaPlayer getmMediaPlayer () {
-        return mMediaPlayer;
     }
 
     public void seekTo (int position) {
@@ -137,11 +174,15 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
 
         @Override
         public void run() {
-            if(mMediaPlayer != null) {
+            if(mMediaPlayer != null && isPrepared) {
                 int currentPosition = mMediaPlayer.getCurrentPosition();
-                if(srubBar != null && duration != null) {
-                    srubBar.setProgress(currentPosition);
-                    String result = String.format("%02d:%02d", (currentPosition % (60*60*1000))/(60*1000), (currentPosition % (60*1000))/1000);
+                if(scrubBar != null && duration != null) {
+                    int mDuration = mMediaPlayer.getDuration();
+                    scrubBar.setMax(mDuration);
+                    String result = String.format("%02d:%02d", (mDuration % (60 * 60 * 1000)) / (60 * 1000), (mDuration % (60 * 1000)) / 1000);
+                    fullTrackDuration.setText(result);
+                    scrubBar.setProgress(currentPosition);
+                    result = String.format("%02d:%02d", (currentPosition % (60*60*1000))/(60*1000), (currentPosition % (60*1000))/1000);
                     duration.setText(result);
                 }
                 mHandler.postDelayed(updateRunTime, 100);
@@ -152,10 +193,14 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
     @Override
     public void onDestroy() {
         if(mMediaPlayer != null) {
+            mMediaPlayer.stop();
             mMediaPlayer.release();
             isPrepared = false;
             mMediaPlayer = null;
         }
+        wifiLock.release();
+        stopForeground(true);
+        Log.d(LOG_TAG, "Service Destroyed");
         super.onDestroy();
     }
 }

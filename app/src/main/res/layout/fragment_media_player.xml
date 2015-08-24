@@ -3,8 +3,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingTop="10dp"
-    android:paddingBottom="10dp">
+    android:paddingTop="15dp">
 
     <TextView
         android:layout_width="match_parent"
@@ -19,7 +18,7 @@
         android:gravity="center"/>
 
     <ImageView
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/media_player_song_image"
         android:gravity="center"
@@ -68,7 +67,8 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:paddingLeft="20dp"
-        android:paddingRight="20dp">
+        android:paddingRight="20dp"
+        android:paddingBottom="20dp">
         <ImageButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

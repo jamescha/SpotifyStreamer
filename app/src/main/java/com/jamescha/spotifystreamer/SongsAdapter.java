@@ -12,10 +12,12 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
+import java.io.Serializable;
+
 /**
  * Created by jamescha on 7/2/15.
  */
-public class SongsAdapter extends CursorAdapter {
+public class SongsAdapter extends CursorAdapter implements Serializable{
     private static final String LOG_TAG = SongsAdapter.class.getSimpleName();
 
 
